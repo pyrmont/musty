@@ -29,7 +29,10 @@
          ,data)
 
        val
-       ,data)))
+       ,data
+
+       :else
+       "")))
 
 
 (defn- variable

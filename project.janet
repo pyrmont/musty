@@ -5,7 +5,8 @@
   :license "MIT"
   :url "https://github.com/pyrmont/musty"
   :repo "git+https://github.com/pyrmont/musty"
-  :dependencies ["https://github.com/pyrmont/testament"])
+  :dependencies ["https://github.com/janet-lang/spork"
+                 "https://github.com/pyrmont/testament"])
 
 (declare-source
   :source @["src/musty.janet"])
