@@ -1,0 +1,92 @@
+(def- messages
+  {:section-tag-mismatch
+   "Syntax error: The opening and closing section tags do not match"})
+
+
+(defn- inverted
+  [open-id data close-id]
+  (unless (= open-id close-id) (error (messages :section-tag-mismatch)))
+  ~(let [val (lookup ,(keyword open-id))]
+     (if (nil? val)
+       ,data
+       "")))
+
+
+(defn- section
+  [open-id data close-id]
+  (unless (= open-id close-id) (error (messages :section-tag-mismatch)))
+  ~(let [val (lookup ,(keyword open-id))]
+     (cond
+       (indexed? val)
+       (string ;(seq [el :in val
+                         :before (array/push ctx el)
+                         :after (array/pop ctx)]
+                  ,data))
+
+       (dictionary? val)
+       (defer (array/pop ctx)
+         (array/push ctx val)
+         ,data)
+
+       val
+       ,data)))
+
+
+(defn- variable
+  [x]
+  ~(or (lookup ,(keyword x)) ""))
+
+
+(defn- text
+  [x]
+  x)
+
+
+(defn- data
+  [& xs]
+  ~(string ,;xs))
+
+
+(def- mustache
+  (peg/compile
+    ~{:identifier :w+
+
+      :partial (* "{{> " :identifier "}}")
+
+      :comments (* "{{!" (any (if-not "}" 1)) "}}")
+
+      :isec-close (* "{{/" ':identifier "}}")
+      :isec-open (* "{{^" ':identifier "}}")
+      :inverted (/ (* :isec-open :data :isec-close) ,inverted)
+
+      :sec-close (* "{{/" ':identifier "}}")
+      :sec-open (* "{{#" ':identifier "}}")
+      :section (/ (* :sec-open :data :sec-close) ,section)
+
+      :variable (* "{{" (/ ':identifier ,variable) "}}")
+
+      :tag (+ :variable :section :inverted :comments :partial)
+
+      :close-brace (* "}" (! "}"))
+      :open-brace (* "{" (! "{"))
+      :not-brace (some (if-not (set "{}") 1))
+      :text (/ '(+ :not-brace :open-brace :close-brace) ,text)
+
+      :data (/ (any (+ :tag :text)) ,data)
+      :main :data}))
+
+
+(defn render
+  [template replacements]
+  (def output
+    (eval
+     ~(fn [ctx]
+        (let [lookup (fn [x]
+                       (var result nil)
+                       (loop [i :down-to [(- (length ctx) 1) 0]]
+                         (when-let [val (get-in ctx [i x])]
+                           (set result val)
+                           (break)))
+                       result)]
+         ,;(peg/match mustache template)))))
+  (output @[replacements]))
