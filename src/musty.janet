@@ -1,6 +1,14 @@
 (def- messages
   {:section-tag-mismatch
-   "Syntax error: The opening and closing section tags do not match"})
+   "Syntax error: The opening and closing section tags do not match"
+
+   ::syntax-errorsyntax-error
+   "Syntax error at index %d: %q"})
+
+
+(defn- syntax-error
+  [col fragment]
+  (error (string/format (messages :syntax-error) col fragment)))
 
 
 (defn- inverted
@@ -52,31 +60,32 @@
 
 (def- mustache
   (peg/compile
-    ~{:identifier :w+
+    ~{:end-or-error (+ -1 (cmt '(* ($) (between 1 10 1)) ,syntax-error))
+
+      :newline (? "\n")
+
+      :identifier (* :w (any (if-not "}}" 1)))
 
       :partial (* "{{> " :identifier "}}")
 
-      :comments (* "{{!" (any (if-not "}" 1)) "}}")
+      :comments (* "{{!" (any (if-not "}}" 1)) "}}")
 
       :isec-close (* "{{/" ':identifier "}}")
-      :isec-open (* "{{^" ':identifier "}}")
+      :isec-open (* "{{^" ':identifier "}}" :newline)
       :inverted (/ (* :isec-open :data :isec-close) ,inverted)
 
       :sec-close (* "{{/" ':identifier "}}")
-      :sec-open (* "{{#" ':identifier "}}")
+      :sec-open (* "{{#" ':identifier "}}" :newline)
       :section (/ (* :sec-open :data :sec-close) ,section)
 
       :variable (* "{{" (/ ':identifier ,variable) "}}")
 
       :tag (+ :variable :section :inverted :comments :partial)
 
-      :close-brace (* "}" (! "}"))
-      :open-brace (* "{" (! "{"))
-      :not-brace (some (if-not (set "{}") 1))
-      :text (/ '(+ :not-brace :open-brace :close-brace) ,text)
+      :text (/ '(some (if-not "{{" 1)) ,text)
 
       :data (/ (any (+ :tag :text)) ,data)
-      :main :data}))
+      :main (* :data :end-or-error)}))
 
 
 (defn render
@@ -91,5 +100,5 @@
                            (set result val)
                            (break)))
                        result)]
-         ,;(peg/match mustache template)))))
+          ,;(peg/match mustache template)))))
   (output @[replacements]))
