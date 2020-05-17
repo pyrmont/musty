@@ -22,25 +22,41 @@
     {{/matching}}
     ```))
 
-(deftest no-replacements
+
+(deftest no-tags
   (is (= "This is a test." (musty/render "This is a test." {}))))
 
 
-(deftest variable-replacement
+(deftest single-variable
   (is (= "This is a test template." (musty/render simple-template {:simple "test"}))))
 
 
+(deftest multiple-variables
+  (is (= "1 2" (musty/render "{{var1}} {{var2}}" {:var1 "1" :var2 "2"}))))
+
+
 (deftest section-replacement
-  (def expect "This is a\n\n  \n  section on the outside.\n\n\n  This is not matching.\n")
-  (is (= expect (musty/render complex-template {:very true}))))
+  (def expected
+    (string "This is a\n  \n  "
+            "section on the outside.\n\n  "
+            "This is not matching.\n"))
+  (is (= expected (musty/render complex-template {:very true}))))
 
 
 (deftest nested-section-replacement
-  (def expect "This is a\n\n  \n    nested expression and another\n  \n    nested expression and a\n  \n  section on the outside.\n\n")
-  (is (= expect (musty/render complex-template {:title "nested"
-                                                :very {:nested [{:expression "expression and another"}
-                                                                {:expression "expression and a"}]}
-                                                :matching true}))))
+  (def expected
+    (string "This is a\n      "
+            "nested expression and another\n      "
+            "nested expression and a\n  \n  "
+            "section on the outside.\n\n"))
+  (is (= expected (musty/render complex-template {:title "nested"
+                                                  :very {:nested [{:expression "expression and another"}
+                                                                  {:expression "expression and a"}]}
+                                                  :matching true}))))
+
+
+(deftest throws-error
+  (is (thrown? (musty/render "This is an error, right {{" {}))))
 
 
 (run-tests!)
