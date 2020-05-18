@@ -2,7 +2,7 @@
   {:section-tag-mismatch
    "Syntax error: The opening and closing section tags do not match"
 
-   ::syntax-errorsyntax-error
+   :syntax-error
    "Syntax error at index %d: %q"})
 
 

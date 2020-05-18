@@ -56,7 +56,8 @@
 
 
 (deftest throws-error
-  (is (thrown? (musty/render "This is an error, right {{" {}))))
+  (def message "Syntax error at index 24: \"{{\"")
+  (is (thrown? message (musty/render "This is an error, right {{" {}))))
 
 
 (run-tests!)
