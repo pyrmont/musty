@@ -1,3 +1,11 @@
+### Musty
+
+## An incomplete Mustache implementation in Janet
+
+## by Michael Camilleri
+## 19 May 2020
+
+
 (def- messages
   {:section-tag-mismatch
    "Syntax error: The opening and closing section tags do not match"
@@ -7,11 +15,18 @@
 
 
 (defn- syntax-error
+  ```
+  Raise a syntax error specifying the `col` and `fragment`
+  ```
   [col fragment]
   (error (string/format (messages :syntax-error) col fragment)))
 
 
 (defn- inverted
+  ```
+  Return the computed `data` if the tag name in `open-id` and `close-id` does
+  not exist
+  ```
   [open-id data close-id]
   (unless (= open-id close-id) (error (messages :section-tag-mismatch)))
   ~(let [val (lookup ,(keyword open-id))]
@@ -21,6 +36,15 @@
 
 
 (defn- section
+  ```
+  Return the computed `data` if the tag name in `open-id` and `close-id` exists
+  or is a non-empty list
+
+  If the tag represents:
+
+  1. a non-empty list, will concatenate the generated value;
+  2. a truthy value, will return the generated value.
+  ```
   [open-id data close-id]
   (unless (= open-id close-id) (error (messages :section-tag-mismatch)))
   ~(let [val (lookup ,(keyword open-id))]
@@ -44,21 +68,33 @@
 
 
 (defn- variable
+  ```
+  Return the computed value `x`
+  ```
   [x]
   ~(or (lookup ,(keyword x)) ""))
 
 
 (defn- text
+  ```
+  Return the text `x`
+  ```
   [x]
   x)
 
 
 (defn- data
+  ```
+  Concatenate the values `xs`
+  ```
   [& xs]
   ~(string ,;xs))
 
 
 (def- mustache
+  ```
+  The grammar for Mustache
+  ```
   (peg/compile
     ~{:end-or-error (+ -1 (cmt '(* ($) (between 1 10 1)) ,syntax-error))
 
@@ -89,6 +125,18 @@
 
 
 (defn render
+  ```
+  Render the Mustache `template` using a dictionary `replacements`
+
+  Musty will translate the Mustache template into a series of Janet expressions
+  and then evaluate those expressions to produce a string.. The translation is
+  accomplished by way of a parser expression grammar that matches particular
+  tags and then causes the tag and its enclosed value to be replaced with the
+  relevant Janet expression.
+
+  Musty is a partial implementation of the Mustache specification. It supports
+  variable tags, section tags, inverted section tags and comment tags.
+  ```
   [template replacements]
   (def output
     (eval
