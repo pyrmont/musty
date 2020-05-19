@@ -67,22 +67,23 @@
        "")))
 
 
+(defn- variable
+  ```
+  Return the HTML-escaped computed value `x`
+  ```
+  [x &keys {:escape? escape?}]
+  (default escape? true)
+  ~(if-let [val (-> ,x lookup string)]
+     (if ,escape? (escape val) val)
+     ""))
+
+
 (defn- variable-unescaped
   ```
   Return the unescaped computer value `x`
   ```
   [x]
-  ~(or (lookup ,x) ""))
-
-
-(defn- variable
-  ```
-  Return the HTML-escaped computed value `x`
-  ```
-  [x]
-  ~(if-let [val (lookup ,x)]
-     (escape val)
-     ""))
+  (variable x :escape? false))
 
 
 (defn- text

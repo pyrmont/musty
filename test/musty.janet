@@ -75,4 +75,8 @@
   (is (= "world" (musty/render "{{ hello }}" {:hello "world"}))))
 
 
+(deftest interpolation
+  (is (= "1.21 jiggawatts!" (musty/render "{{power}} jiggawatts!" {:power 1.210}))))
+
+
 (run-tests!)
