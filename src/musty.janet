@@ -163,11 +163,13 @@
   ```
   [ctx]
   (fn lookup [x]
-    (def key (-> x string/trim keyword))
+    (def ks (->> x string/trim (string/split ".") (map keyword)))
     (var result nil)
     (loop [i :down-to [(- (length ctx) 1) 0]]
-      (when-let [val (get-in ctx [i key])]
+      (when-let [val (get-in ctx [i ;ks])]
         (set result val)
+        (break))
+      (if (and (> (length ks) 1) (get-in ctx [i ;(slice ks 0 -2)]))
         (break)))
     result))
 
