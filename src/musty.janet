@@ -47,7 +47,7 @@
   ```
   [open-id data close-id]
   (unless (= open-id close-id) (error (messages :section-tag-mismatch)))
-  ~(let [val (lookup ,(keyword open-id))]
+  ~(let [val (lookup ,open-id)]
      (cond
        (indexed? val)
        (string ;(seq [el :in val
@@ -72,7 +72,7 @@
   Return the unescaped computer value `x`
   ```
   [x]
-  ~(or (lookup ,(keyword x)) ""))
+  ~(or (lookup ,x) ""))
 
 
 (defn- variable
@@ -80,7 +80,7 @@
   Return the HTML-escaped computed value `x`
   ```
   [x]
-  ~(if-let [val (lookup ,(keyword x))]
+  ~(if-let [val (lookup ,x)]
      (escape val)
      ""))
 
@@ -110,7 +110,7 @@
 
       :newline (? "\n")
 
-      :identifier (* :w (any (if-not (set "{}") :S)))
+      :identifier (* :s* :w (any (if-not (set "{}") :S)) :s*)
 
       :partial (* "{{> " :identifier "}}")
 
@@ -124,7 +124,7 @@
       :sec-open (* "{{#" ':identifier "}}" :newline)
       :section (/ (* :sec-open :data :sec-close) ,section)
 
-      :unescape-variable-ampersand (* "{{& " (/ ':identifier ,variable-unescaped) "}}")
+      :unescape-variable-ampersand (* "{{&" (/ ':identifier ,variable-unescaped) "}}")
       :unescape-variable-triple (* "{{{" (/ ':identifier ,variable-unescaped) "}}}")
       :variable (* "{{" (/ ':identifier ,variable) "}}")
 
@@ -157,15 +157,16 @@
   (string result))
 
 
-(defn- lookup
+(defn- lookup-fn
   ```
   Return a lookup function for a context `ctx`
   ```
   [ctx]
-  (fn [x]
+  (fn lookup [x]
+    (def key (-> x string/trim keyword))
     (var result nil)
     (loop [i :down-to [(- (length ctx) 1) 0]]
-      (when-let [val (get-in ctx [i x])]
+      (when-let [val (get-in ctx [i key])]
         (set result val)
         (break)))
     result))
@@ -188,7 +189,7 @@
   (def output
     (eval
      ~(fn [ctx]
-        (let [lookup (,lookup ctx)
+        (let [lookup (,lookup-fn ctx)
               escape ,escape]
           ,;(peg/match mustache template)))))
   (output @[replacements]))
