@@ -60,4 +60,7 @@
   (is (thrown? message (musty/render "This is an error, right {{" {}))))
 
 
+(deftest escape-html
+  (is (= "&lt;html&gt;" (musty/render "{{tag}}" {:tag "<html>"}))))
+
 (run-tests!)

@@ -69,10 +69,12 @@
 
 (defn- variable
   ```
-  Return the computed value `x`
+  Return the HTML-escaped computed value `x`
   ```
   [x]
-  ~(or (lookup ,(keyword x)) ""))
+  ~(if-let [val (lookup ,(keyword x))]
+     (escape val)
+     ""))
 
 
 (defn- text
