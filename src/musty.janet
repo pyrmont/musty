@@ -73,7 +73,7 @@
   ```
   [x &keys {:escape? escape?}]
   (default escape? true)
-  ~(if-let [val (-> ,x lookup string)]
+  ~(if-let [val (-> ,x lookup (or "") string)]
      (if ,escape? (escape val) val)
      ""))
 
