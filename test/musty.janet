@@ -63,4 +63,10 @@
 (deftest escape-html
   (is (= "&lt;html&gt;" (musty/render "{{tag}}" {:tag "<html>"}))))
 
+
+(deftest unescape-html
+  (is (= "<html>" (musty/render "{{{tag}}}" {:tag "<html>"})))
+  (is (= "<html>" (musty/render "{{& tag}}" {:tag "<html>"}))))
+
+
 (run-tests!)

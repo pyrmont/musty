@@ -67,6 +67,14 @@
        "")))
 
 
+(defn- variable-unescaped
+  ```
+  Return the unescaped computer value `x`
+  ```
+  [x]
+  ~(or (lookup ,(keyword x)) ""))
+
+
 (defn- variable
   ```
   Return the HTML-escaped computed value `x`
@@ -102,7 +110,7 @@
 
       :newline (? "\n")
 
-      :identifier (* :w (any (if-not "}}" 1)))
+      :identifier (* :w (any (if-not (set "{}") :S)))
 
       :partial (* "{{> " :identifier "}}")
 
@@ -116,9 +124,13 @@
       :sec-open (* "{{#" ':identifier "}}" :newline)
       :section (/ (* :sec-open :data :sec-close) ,section)
 
+      :unescape-variable-ampersand (* "{{& " (/ ':identifier ,variable-unescaped) "}}")
+      :unescape-variable-triple (* "{{{" (/ ':identifier ,variable-unescaped) "}}}")
       :variable (* "{{" (/ ':identifier ,variable) "}}")
 
-      :tag (+ :variable :section :inverted :comments :partial)
+      :tag (+ :variable :unescape-variable-triple :unescape-variable-ampersand
+              :section :inverted
+              :comments :partial)
 
       :text (/ '(some (if-not "{{" 1)) ,text)
 
