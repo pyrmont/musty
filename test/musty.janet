@@ -57,7 +57,9 @@
 
 (deftest throws-error
   (def message "Syntax error at index 24: \"{{\"")
-  (is (thrown? message (musty/render "This is an error, right {{" {}))))
+  (is (thrown? message (musty/render "This is an error, right {{" {})))
+  (def message2 "Syntax error at index 11: \"{{ error }\"")
+  (is (thrown? message2 (musty/render "This is an {{ error }}" {}))))
 
 
 (deftest escape-html
