@@ -124,6 +124,39 @@
       :main (* :data :end-or-error)}))
 
 
+(defn- escape
+  ```
+  Escape the `str` of HTML entities
+  ```
+  [str]
+  (def translations
+    {34 "&quot;"
+     38 "&amp;"
+     39 "&apos;"
+     60 "&lt;"
+     62 "&gt;"})
+  (def result @"")
+  (each byte str
+    (if-let [replacement (get translations byte)]
+      (buffer/push-string result replacement)
+      (buffer/push-byte result byte)))
+  (string result))
+
+
+(defn- lookup
+  ```
+  Return a lookup function for a context `ctx`
+  ```
+  [ctx]
+  (fn [x]
+    (var result nil)
+    (loop [i :down-to [(- (length ctx) 1) 0]]
+      (when-let [val (get-in ctx [i x])]
+        (set result val)
+        (break)))
+    result))
+
+
 (defn render
   ```
   Render the Mustache `template` using a dictionary `replacements`
@@ -141,12 +174,7 @@
   (def output
     (eval
      ~(fn [ctx]
-        (let [lookup (fn [x]
-                       (var result nil)
-                       (loop [i :down-to [(- (length ctx) 1) 0]]
-                         (when-let [val (get-in ctx [i x])]
-                           (set result val)
-                           (break)))
-                       result)]
+        (let [lookup (,lookup ctx)
+              escape ,escape]
           ,;(peg/match mustache template)))))
   (output @[replacements]))
