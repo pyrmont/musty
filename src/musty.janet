@@ -108,7 +108,9 @@
   (peg/compile
     ~{:end-or-error (+ -1 (cmt '(* ($) (between 1 10 1)) ,syntax-error))
 
-      :newline (? "\n")
+      :newline (? (* (? "\r") "\n"))
+      # Why does this only work with a double negative for the lookbehind?
+      :indent (* (not (> -1 (not "\n"))) (any (set " \t\v")))
 
       :identifier (* :s* :w (any (if-not (set "{}") :S)) :s*)
 
@@ -117,24 +119,25 @@
       :comments (* "{{!" (any (if-not "}}" 1)) "}}")
 
       :isec-close (* "{{/" ':identifier "}}")
-      :isec-open (* "{{^" ':identifier "}}" :newline)
+      :isec-open (* "{{^" ':identifier "}}")
       :inverted (/ (* :isec-open :data :isec-close) ,inverted)
 
       :sec-close (* "{{/" ':identifier "}}")
-      :sec-open (* "{{#" ':identifier "}}" :newline)
+      :sec-open (* "{{#" ':identifier "}}")
       :section (/ (* :sec-open :data :sec-close) ,section)
 
       :unescape-variable-ampersand (* "{{&" (/ ':identifier ,variable-unescaped) "}}")
       :unescape-variable-triple (* "{{{" (/ ':identifier ,variable-unescaped) "}}}")
       :variable (* "{{" (/ ':identifier ,variable) "}}")
 
-      :tag (+ :variable :unescape-variable-triple :unescape-variable-ampersand
-              :section :inverted
-              :comments :partial)
+      :variables (+ :variable :unescape-variable-triple :unescape-variable-ampersand)
+      :inline (+ :section :inverted :comments :partial)
+      :standalone (* :indent :inline :newline)
+      :tag (+ :standalone :inline :variables)
 
-      :text (/ '(some (if-not "{{" 1)) ,text)
+      :text (/ '(some (if-not (+ "{{" "\n") 1)) ,text)
 
-      :data (/ (any (+ :tag :text)) ,data)
+      :data (/ (any (+ :tag :text ':newline)) ,data)
       :main (* :data :end-or-error)}))
 
 
