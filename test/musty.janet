@@ -37,18 +37,18 @@
 
 (deftest section-replacement
   (def expected
-    (string "This is a    "
-            "section on the outside.  "
-            "This is not matching."))
+    (string "This is a\n  "
+            "section on the outside.\n  "
+            "This is not matching.\n"))
   (is (= expected (musty/render complex-template {:very true}))))
 
 
 (deftest nested-section-replacement
   (def expected
-    (string "This is a      "
-            "nested expression and another      "
-            "nested expression and a    "
-            "section on the outside."))
+    (string "This is a\n    "
+            "nested expression and another\n    "
+            "nested expression and a\n  "
+            "section on the outside.\n"))
   (is (= expected (musty/render complex-template {:title "nested"
                                                   :very {:nested [{:expression "expression and another"}
                                                                   {:expression "expression and a"}]}

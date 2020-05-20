@@ -27,11 +27,11 @@
   Return the computed `data` if the tag name in `open-id` and `close-id` does
   not exist
   ```
-  [open-id data close-id]
+  [open-id data ws close-id]
   (unless (= open-id close-id) (error (messages :section-tag-mismatch)))
   ~(let [val (lookup ,(keyword open-id))]
      (if (or (nil? val) (and (indexed? val) (empty? val)))
-       ,data
+       (string ,data ,ws)
        "")))
 
 
@@ -45,7 +45,7 @@
   1. a non-empty list, will concatenate the generated value;
   2. a truthy value, will return the generated value.
   ```
-  [open-id data close-id]
+  [open-id data ws close-id]
   (unless (= open-id close-id) (error (messages :section-tag-mismatch)))
   ~(let [val (lookup ,open-id)]
      (cond
@@ -53,19 +53,17 @@
        (string ;(seq [el :in val
                          :before (array/push ctx el)
                          :after (array/pop ctx)]
-                  ,data))
-
+                  (string ,data ,ws)))
        (dictionary? val)
        (defer (array/pop ctx)
          (array/push ctx val)
-         ,data)
+         (string ,data ,ws))
 
        val
-       ,data
+       (string ,data ,ws)
 
        :else
        "")))
-
 
 (defn- variable
   ```
@@ -74,7 +72,7 @@
   [x &keys {:escape? escape?}]
   (default escape? true)
   ~(let [val (-> ,x lookup (or "") string)]
-     (if ,escape? (escape val) val)))
+     ,(if escape? '(escape val) 'val)))
 
 
 (defn- variable-unescaped
@@ -101,6 +99,12 @@
   ~(string ,;xs))
 
 
+(defn- debugger
+  [& xs]
+  (print (string/format "%j" (gensym)))
+  (print (string/format "%j" xs)))
+
+
 (def- mustache
   ```
   The grammar for Mustache
@@ -108,20 +112,21 @@
   (peg/compile
     ~{:end-or-error (+ -1 (cmt '(* ($) (between 1 10 1)) ,syntax-error))
 
-      :start (drop (cmt (* ($) (constant 0)) ,=))
+      # :start (drop (cmt (* ($) (constant 0)) ,=))
+      # :debug (drop (cmt (* (argument 0) (constant "Here: ") ($)) ,debugger))
 
-      # :newline (? (* (? "\r") "\n"))
       :newline (* (? "\r") "\n")
+      :inspace (any (set " \t\v"))
 
       :identifier (* :s* :w (any (if-not (set "{}") :S)) :s*)
       :delim-close "}}"
       :delim-open "{{"
 
-      :standalone-trail (+ (* (? "\r") "\n") (* :s* -1))
+      :standalone-trail (+ (* (? "\r") "\n") (* :inspace -1))
       # Why does this only work with a double negative for the lookbehind?
-      :standalone-lead (* (not (> -1 (not "\n"))) (any (set " \t\v")))
+      :standalone-lead (* (not (> -1 (not "\n"))) :inspace)
 
-      :tag-close-inline (* :delim-open "/" ':identifier :delim-close)
+      :tag-close-inline (* ':inspace :delim-open "/" ':identifier :delim-close)
       :tag-close-standalone (* :standalone-lead :tag-close-inline :standalone-trail)
       :tag-close (+ :tag-close-standalone :tag-close-inline)
 
@@ -149,9 +154,11 @@
       :others (+ :section :inverted :comments :partial)
       :tag (+ :others :variables)
 
-      :text (/ '(some (if-not (+ "{{" "\n") 1)) ,text)
+      :text (/ '(some (if-not (+ "\n" (* :inspace :delim-open)) 1)) ,text)
+      :newlines (/ '(some :newline) ,text)
+      :trailing (/ '(* :inspace (! (* :delim-open "/"))) ,text)
 
-      :data (/ (any (+ ':newline :tag :text)) ,data)
+      :data (/ (any (+ :newlines :text :tag :trailing)) ,data)
       :main (* :data :end-or-error)}))
 
 

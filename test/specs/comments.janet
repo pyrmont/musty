@@ -77,7 +77,7 @@
   (def data
     {})
   (def template
-    "Begin.\n{{!\nSomething's going on here...\n}}End.")
+    "Begin.\n{{!\nSomething's going on here...\n}}\nEnd.")
   (def expect
     "Begin.\nEnd.")
   (is (= expect (musty/render template data))))
