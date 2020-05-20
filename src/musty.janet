@@ -30,7 +30,7 @@
   [open-id data close-id]
   (unless (= open-id close-id) (error (messages :section-tag-mismatch)))
   ~(let [val (lookup ,(keyword open-id))]
-     (if (nil? val)
+     (if (or (nil? val) (and (indexed? val) (empty? val)))
        ,data
        "")))
 
@@ -108,36 +108,50 @@
   (peg/compile
     ~{:end-or-error (+ -1 (cmt '(* ($) (between 1 10 1)) ,syntax-error))
 
-      :newline (? (* (? "\r") "\n"))
-      # Why does this only work with a double negative for the lookbehind?
-      :indent (* (not (> -1 (not "\n"))) (any (set " \t\v")))
+      :start (drop (cmt (* ($) (constant 0)) ,=))
+
+      # :newline (? (* (? "\r") "\n"))
+      :newline (* (? "\r") "\n")
 
       :identifier (* :s* :w (any (if-not (set "{}") :S)) :s*)
+      :delim-close "}}"
+      :delim-open "{{"
+
+      :standalone-trail (+ (* (? "\r") "\n") (* :s* -1))
+      # Why does this only work with a double negative for the lookbehind?
+      :standalone-lead (* (not (> -1 (not "\n"))) (any (set " \t\v")))
+
+      :tag-close-inline (* :delim-open "/" ':identifier :delim-close)
+      :tag-close-standalone (* :standalone-lead :tag-close-inline :standalone-trail)
+      :tag-close (+ :tag-close-standalone :tag-close-inline)
 
       :partial (* "{{> " :identifier "}}")
 
-      :comments (* "{{!" (any (if-not "}}" 1)) "}}")
+      :comments-inline (* :delim-open "!" (any (if-not :delim-close 1)) :delim-close)
+      :comments-standalone (* :standalone-lead :comments-inline :standalone-trail)
+      :comments (+ :comments-standalone :comments-inline)
 
-      :isec-close (* "{{/" ':identifier "}}")
-      :isec-open (* "{{^" ':identifier "}}")
-      :inverted (/ (* :isec-open :data :isec-close) ,inverted)
+      :inverted-open-inline (* :delim-open "^" ':identifier :delim-close)
+      :inverted-open-standalone (* :standalone-lead :inverted-open-inline :standalone-trail)
+      :inverted-open (+ :inverted-open-standalone :inverted-open-inline)
+      :inverted (/ (* :inverted-open :data :tag-close) ,inverted)
 
-      :sec-close (* "{{/" ':identifier "}}")
-      :sec-open (* "{{#" ':identifier "}}")
-      :section (/ (* :sec-open :data :sec-close) ,section)
+      :section-open-inline (* :delim-open "#" ':identifier :delim-close)
+      :section-open-standalone (* :standalone-lead :section-open-inline :standalone-trail)
+      :section-open (+ :section-open-standalone :section-open-inline)
+      :section (/ (* :section-open :data :tag-close) ,section)
 
-      :unescape-variable-ampersand (* "{{&" (/ ':identifier ,variable-unescaped) "}}")
-      :unescape-variable-triple (* "{{{" (/ ':identifier ,variable-unescaped) "}}}")
-      :variable (* "{{" (/ ':identifier ,variable) "}}")
+      :unescape-variable-ampersand (* :delim-open "&" (/ ':identifier ,variable-unescaped) :delim-close)
+      :unescape-variable-triple (* :delim-open "{" (/ ':identifier ,variable-unescaped) "}" :delim-close)
+      :variable (/ (* :delim-open ':identifier :delim-close) ,variable)
 
       :variables (+ :variable :unescape-variable-triple :unescape-variable-ampersand)
-      :inline (+ :section :inverted :comments :partial)
-      :standalone (* :indent :inline :newline)
-      :tag (+ :standalone :inline :variables)
+      :others (+ :section :inverted :comments :partial)
+      :tag (+ :others :variables)
 
       :text (/ '(some (if-not (+ "{{" "\n") 1)) ,text)
 
-      :data (/ (any (+ :tag :text ':newline)) ,data)
+      :data (/ (any (+ ':newline :tag :text)) ,data)
       :main (* :data :end-or-error)}))
 
 
