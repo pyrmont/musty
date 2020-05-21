@@ -203,7 +203,7 @@
   (is (= expect (musty/render template data))))
 
 
-(deftest paddig
+(deftest padding
   (def data
     {:boolean false})
   (def template

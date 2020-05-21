@@ -118,7 +118,7 @@
       :newline (* (? "\r") "\n")
       :inspace (any (set " \t\v"))
 
-      :identifier (* :s* :w (any (if-not (set "{}") :S)) :s*)
+      :identifier (* :s* (+ "." (* :w (any (if-not (set "{}") :S)))) :s*)
       :delim-close "}}"
       :delim-open "{{"
 
@@ -187,14 +187,20 @@
   ```
   [ctx]
   (fn lookup [x]
-    (def ks (->> x string/trim (string/split ".") (map keyword)))
     (var result nil)
-    (loop [i :down-to [(- (length ctx) 1) 0]]
-      (when-let [val (get-in ctx [i ;ks])]
-        (set result val)
-        (break))
-      (if (and (> (length ks) 1) (get-in ctx [i ;(slice ks 0 -2)]))
-        (break)))
+    (def trimmed-x (string/trim x))
+    (case trimmed-x
+      "." # The implicit dot iterator
+      (set result (array/peek ctx))
+
+      (do # Regular lookup
+        (def ks (->> trimmed-x (string/split ".") (map keyword)))
+        (loop [i :down-to [(- (length ctx) 1) 0]]
+          (when-let [val (get-in ctx [i ;ks])]
+            (set result val)
+            (break))
+          (if (and (> (length ks) 1) (get-in ctx [i ;(slice ks 0 -2)]))
+            (break)))))
     result))
 
 
