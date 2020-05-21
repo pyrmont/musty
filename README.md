@@ -7,6 +7,12 @@ rendered. Musty handles the rendering in a straightforward way. Give it your
 template and a dictionary object and you get back to the expanded string. Too
 easy.
 
+Musty passes Mustache's [specs][] for **variables**, **sections**,
+**inverted sections** and **comments**. It does not implement **partials**,
+**lambdas** or custom **delimiters**.
+
+[specs]: https://github.com/mustache/spec
+
 ## Usage
 
 Add Musty to the dependencies in your `project.janet` file:
