@@ -1,6 +1,6 @@
 (import testament :prefix "" :exit 1)
 (import spork/misc :as spork)
-(import src/musty :as musty)
+(import ../src/musty :as musty)
 
 
 (def simple-template

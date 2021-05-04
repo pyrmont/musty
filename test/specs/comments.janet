@@ -1,5 +1,5 @@
 (import testament :prefix "" :exit 1)
-(import src/musty :as musty)
+(import ../../src/musty :as musty)
 
 
 (deftest inline
