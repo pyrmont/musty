@@ -1,5 +1,4 @@
 (import testament :prefix "" :exit 1)
-(import spork/misc :as spork)
 (import ../src/musty :as musty)
 
 
@@ -8,19 +7,16 @@
 
 
 (def complex-template
-  (spork/dedent
-    ```
-    This is a
-    {{#very}}
-      {{#nested}}
-        {{title}} {{expression}}
-      {{/nested}}
-      section on the outside.
-    {{/very}}
-    {{^matching}}
-      This is not matching.
-    {{/matching}}
-    ```))
+  `This is a
+   {{#very}}
+   {{#nested}}
+   {{title}} {{expression}}
+   {{/nested}}
+   section on the outside.
+   {{/very}}
+   {{^matching}}
+   This is not matching.
+   {{/matching}}`)
 
 
 (deftest no-tags
@@ -36,23 +32,26 @@
 
 
 (deftest section-replacement
-  (def expected
-    (string "This is a\n  "
-            "section on the outside.\n  "
-            "This is not matching.\n"))
-  (is (= expected (musty/render complex-template {:very true}))))
+  (def expect (string `This is a
+                       section on the outside.
+                       This is not matching.`
+                       "\n"))
+  (def actual (musty/render complex-template {:very true}))
+  (is (= expect actual)))
 
 
 (deftest nested-section-replacement
-  (def expected
-    (string "This is a\n    "
-            "nested expression and another\n    "
-            "nested expression and a\n  "
-            "section on the outside.\n"))
-  (is (= expected (musty/render complex-template {:title "nested"
-                                                  :very {:nested [{:expression "expression and another"}
-                                                                  {:expression "expression and a"}]}
-                                                  :matching true}))))
+  (def expect (string `This is a
+                       nested expression and another
+                       nested expression and a
+                       section on the outside.`
+                      "\n"))
+  (def actual (musty/render complex-template
+                            {:title "nested"
+                             :very {:nested [{:expression "expression and another"}
+                                             {:expression "expression and a"}]}
+                             :matching true}))
+  (is (= expect actual)))
 
 
 (deftest throws-error

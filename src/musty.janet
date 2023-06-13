@@ -1,11 +1,3 @@
-### Musty
-
-## An incomplete Mustache implementation in Janet
-
-## by Michael Camilleri
-## 19 May 2020
-
-
 (def- messages
   {:section-tag-mismatch
    "Syntax error: The opening and closing section tags do not match"

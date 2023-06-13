@@ -5,8 +5,15 @@
   :license "MIT"
   :url "https://github.com/pyrmont/musty"
   :repo "git+https://github.com/pyrmont/musty"
-  :dependencies ["https://github.com/janet-lang/spork"
-                 "https://github.com/pyrmont/testament"])
+  :dev-dependencies ["https://github.com/pyrmont/testament"])
 
 (declare-source
-  :source @["src/musty.janet"])
+  :source ["src/musty.janet"])
+
+(task "dev-deps" []
+  (if-let [deps ((dyn :project) :dev-dependencies)]
+    (each dep deps
+      (bundle-install dep))
+    (do
+      (print "no dependencies found")
+      (flush))))
