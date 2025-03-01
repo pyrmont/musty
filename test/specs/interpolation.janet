@@ -1,5 +1,5 @@
-(import testament :prefix "" :exit 1)
-(import ../../src/musty :as musty)
+(use ../../deps/testament)
+(import ../../lib/musty)
 
 
 (deftest no-interpolation

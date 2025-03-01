@@ -2,6 +2,8 @@
 
 Musty is an incomplete Mustache implementation in Janet.
 
+## Rationale
+
 Mustache templates are strings with special values that are expanded when
 rendered. Musty handles the rendering in a straightforward way. Give it your
 template and a dictionary object and you get back to the expanded string. Too
@@ -13,21 +15,26 @@ Musty passes Mustache's [specs][] for **variables**, **sections**,
 
 [specs]: https://github.com/mustache/spec
 
-## Usage
+## Library
 
-Add Musty to the dependencies in your `project.janet` file:
+### Installation
+
+Add the dependency to your `project.janet` file:
 
 ```janet
-
-  :dependencies ["https://github.com/pyrmont/musty"]
+(declare-project
+  :dependencies ["https://github.com/pyrmont/musty"])
 ```
 
-And then in your Janet code, import the module and call the render method:
+### Usage
+
+Musty can be used like this:
 
 ```janet
 (import musty)
 
 (musty/render "Hello {{world}}!" {:world "everybody"})
+# => "Hello everybody!"
 ```
 
 Checkout [the API](api.md) for more information.
