@@ -1,0 +1,20 @@
+{:name "musty"
+ :version "DEVEL"
+ :description "An implementation of the Mustache template system"
+ :author "Michael Camilleri"
+ :license "MIT"
+ :url "https://github.com/pyrmont/musty"
+ :repo "git+https://github.com/pyrmont/musty"
+
+ :vendored {
+   "deps" [
+     {:name "testament"
+      :url "https://github.com/pyrmont/testament"
+      :prefix "testament"
+      :files ["lib/testament.janet"
+              "init.janet"
+              "LICENSE"]}]}
+
+ :source {:prefix "musty"
+          :files ["lib"
+                  "init.janet"]}}
