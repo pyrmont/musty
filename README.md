@@ -24,11 +24,10 @@ Musty passes Mustache's [specs][] for **variables**, **sections**,
 
 ### Installation
 
-Add the dependency to your `project.janet` file:
+Add the dependency to your `info.jdn` file:
 
 ```janet
-(declare-project
-  :dependencies ["https://github.com/pyrmont/musty"])
+  :dependencies ["https://github.com/pyrmont/musty"]
 ```
 
 ### Usage
