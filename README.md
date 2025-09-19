@@ -1,6 +1,9 @@
 # Musty
 
-[![Test Status](https://github.com/pyrmont/musty/workflows/test/badge.svg)](https://github.com/pyrmont/musty/actions?query=workflow%3Atest)
+[![Test Status][icon]][status]
+
+[icon]: https://github.com/pyrmont/musty/workflows/test/badge.svg
+[status]: https://github.com/pyrmont/musty/actions?query=workflow%3Atest
 
 Musty is an incomplete Mustache implementation in Janet.
 
