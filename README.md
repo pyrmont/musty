@@ -41,7 +41,7 @@ Musty can be used like this:
 # => "Hello everybody!"
 ```
 
-Checkout [the API](api.md) for more information.
+Check out the [API document](api.md) for more information.
 
 ## Bugs
 
