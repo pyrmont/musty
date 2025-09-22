@@ -6,7 +6,8 @@
   :author (info :author)
   :license (info :license)
   :url (info :url)
-  :repo (info :repo))
+  :repo (info :repo)
+  :dependencies (info :dependencies))
 
 (task "bundle-install" ["manifest"]
   (def lman-path (find-manifest (info :name)))
