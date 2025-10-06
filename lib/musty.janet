@@ -1,3 +1,31 @@
+(import spork/path)
+
+
+(defn- pre-proc-sub
+  [func working-dir recurse-depth]
+  (fn [path] (func path working-dir recurse-depth)))
+
+
+(defn pre-proc-partials
+  ```
+  Takes a template file path as argument and returns a string with all partials expanded.
+  ```
+  [path &opt call-dir recurse-depth]
+  (def template-path (if call-dir
+       	          (path/join call-dir path)
+                          path))
+
+  (default recurse-depth 0)
+  (if (> recurse-depth 64) (error "Max Partial Recursion depth 64 Reached! I quit!"))
+  
+  (def working-dir (path/dirname template-path))
+  (def callback (pre-proc-sub pre-proc-partials working-dir (+ recurse-depth 1)))
+  (def partials (peg/compile 
+                  ~(% (any (+ (/ (* "{{>" :s+ (<- (to (* :s* "}}"))) :s* "}}") ,callback) (<- 1))))))
+  (def template (slurp template-path))
+  (string/join (peg/match partials template)))
+
+
 (def- messages
   {:section-tag-mismatch
    "Syntax error: The opening and closing section tags do not match"
