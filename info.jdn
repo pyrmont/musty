@@ -8,6 +8,13 @@
 
  :vendored {
    "deps" [
+     {:name "medea"
+      :url "https://github.com/pyrmont/medea"
+      :prefix "medea"
+      :files ["lib/decode.janet"
+              "lib/encode.janet"
+              "init.janet"
+              "LICENSE"]}
      {:name "testament"
       :url "https://github.com/pyrmont/testament"
       :prefix "testament"
