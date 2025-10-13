@@ -8,19 +8,13 @@
 **function**  | [source][1]
 
 ```janet
-(render template replacements)
+(render template context &named dir)
 ```
 
-Render the Mustache `template` using a dictionary `replacements`
+Renders a Mustache `template` using the provided `context` in `dir`
 
-Musty will translate the Mustache template into a series of Janet expressions
-and then evaluate those expressions to produce a string. The translation is
-accomplished by way of a parser expression grammar that matches particular
-tags and then causes the tag and its enclosed value to be replaced with the
-relevant Janet expression.
+The directory `dir` is used to load partial templates. If not provided,
+an error will be raised if a partial is encountered.
 
-Musty is a partial implementation of the Mustache specification. It supports
-variable tags, section tags, inverted section tags and comment tags.
-
-[1]: lib/musty.janet#L199
+[1]: lib/musty.janet#L467
 

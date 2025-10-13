@@ -12,7 +12,7 @@
     ``
     12345{{! Comment Block! }}67890
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest multiline
@@ -29,7 +29,7 @@
     }}67890
     
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest standalone
@@ -46,7 +46,7 @@
     End.
     
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest indented-standalone
@@ -63,7 +63,7 @@
     End.
     
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest standalone-line-endings
@@ -78,7 +78,7 @@
     {{! Standalone Comment }}
     |
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest standalone-without-previous-line
@@ -91,7 +91,7 @@
       {{! I'm Still Standalone }}
     !
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest standalone-without-newline
@@ -105,7 +105,7 @@
     !
       {{! I'm Still Standalone }}
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest multiline-standalone
@@ -124,7 +124,7 @@
     End.
     
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest indented-multiline-standalone
@@ -143,7 +143,7 @@
     End.
     
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest indented-inline
@@ -157,7 +157,7 @@
       12 {{! 34 }}
     
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest surrounding-whitespace
@@ -169,7 +169,7 @@
     ``
     12345 {{! Comment Block! }} 67890
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest variable-name-collision
@@ -181,7 +181,7 @@
     ``
     comments never show: >{{! comment }}<
     ``)
-  (def actual (musty/render template @{"!comment" 3 "! comment " 2 "! comment" 1 "comment" 4} "res/fixtures/"))
+  (def actual (musty/render template @{"!comment" 3 "! comment " 2 "! comment" 1 "comment" 4} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (run-tests!)

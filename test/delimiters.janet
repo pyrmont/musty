@@ -12,7 +12,7 @@
     ``
     {{=<% %>=}}(<%text%>)
     ``)
-  (def actual (musty/render template @{"text" "Hey!"} "res/fixtures/"))
+  (def actual (musty/render template @{"text" "Hey!"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest special-characters
@@ -24,7 +24,7 @@
     ``
     ({{=[ ]=}}[text])
     ``)
-  (def actual (musty/render template @{"text" "It worked!"} "res/fixtures/"))
+  (def actual (musty/render template @{"text" "It worked!"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest sections
@@ -55,7 +55,7 @@
     ]
     
     ``)
-  (def actual (musty/render template @{"section" true "data" "I got interpolated."} "res/fixtures/"))
+  (def actual (musty/render template @{"section" true "data" "I got interpolated."} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest inverted-sections
@@ -86,7 +86,7 @@
     ]
     
     ``)
-  (def actual (musty/render template @{"section" false "data" "I got interpolated."} "res/fixtures/"))
+  (def actual (musty/render template @{"section" false "data" "I got interpolated."} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest partial-inheritence
@@ -103,7 +103,7 @@
     [ |>delimiters_partial-inheritence_include| ]
     
     ``)
-  (def actual (musty/render template @{"value" "yes"} "res/fixtures/"))
+  (def actual (musty/render template @{"value" "yes"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest post-partial-behavior
@@ -119,7 +119,7 @@
     [ .{{value}}.  .|value|. ]
     
     ``)
-  (def actual (musty/render template @{"value" "yes"} "res/fixtures/"))
+  (def actual (musty/render template @{"value" "yes"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest surrounding-whitespace
@@ -131,7 +131,7 @@
     ``
     | {{=@ @=}} |
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest outlying-whitespace-_inline_
@@ -145,7 +145,7 @@
      | {{=@ @=}}
     
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest standalone-tag
@@ -162,7 +162,7 @@
     End.
     
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest indented-standalone-tag
@@ -179,7 +179,7 @@
     End.
     
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest standalone-line-endings
@@ -194,7 +194,7 @@
     {{= @ @ =}}
     |
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest standalone-without-previous-line
@@ -207,7 +207,7 @@
       {{=@ @=}}
     =
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest standalone-without-newline
@@ -221,7 +221,7 @@
     =
       {{=@ @=}}
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest pair-with-padding
@@ -233,7 +233,7 @@
     ``
     |{{= @   @ =}}|
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (run-tests!)

@@ -14,7 +14,7 @@
     Hello from {Mustache}!
     
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest basic-interpolation
@@ -28,7 +28,7 @@
     Hello, {{subject}}!
     
     ``)
-  (def actual (musty/render template @{"subject" "world"} "res/fixtures/"))
+  (def actual (musty/render template @{"subject" "world"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest no-re-interpolation
@@ -40,7 +40,7 @@
     ``
     {{template}}: {{planet}}
     ``)
-  (def actual (musty/render template @{"template" "{{planet}}" "planet" "Earth"} "res/fixtures/"))
+  (def actual (musty/render template @{"template" "{{planet}}" "planet" "Earth"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest html-escaping
@@ -54,7 +54,7 @@
     These characters should be HTML escaped: {{forbidden}}
     
     ``)
-  (def actual (musty/render template @{"forbidden" "& \" < >"} "res/fixtures/"))
+  (def actual (musty/render template @{"forbidden" "& \" < >"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest triple-mustache
@@ -68,7 +68,7 @@
     These characters should not be HTML escaped: {{{forbidden}}}
     
     ``)
-  (def actual (musty/render template @{"forbidden" "& \" < >"} "res/fixtures/"))
+  (def actual (musty/render template @{"forbidden" "& \" < >"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest ampersand
@@ -82,7 +82,7 @@
     These characters should not be HTML escaped: {{&forbidden}}
     
     ``)
-  (def actual (musty/render template @{"forbidden" "& \" < >"} "res/fixtures/"))
+  (def actual (musty/render template @{"forbidden" "& \" < >"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest basic-integer-interpolation
@@ -94,7 +94,7 @@
     ``
     "{{mph}} miles an hour!"
     ``)
-  (def actual (musty/render template @{"mph" 85} "res/fixtures/"))
+  (def actual (musty/render template @{"mph" 85} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest triple-mustache-integer-interpolation
@@ -106,7 +106,7 @@
     ``
     "{{{mph}}} miles an hour!"
     ``)
-  (def actual (musty/render template @{"mph" 85} "res/fixtures/"))
+  (def actual (musty/render template @{"mph" 85} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest ampersand-integer-interpolation
@@ -118,7 +118,7 @@
     ``
     "{{&mph}} miles an hour!"
     ``)
-  (def actual (musty/render template @{"mph" 85} "res/fixtures/"))
+  (def actual (musty/render template @{"mph" 85} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest basic-decimal-interpolation
@@ -130,7 +130,7 @@
     ``
     "{{power}} jiggawatts!"
     ``)
-  (def actual (musty/render template @{"power" 1.21} "res/fixtures/"))
+  (def actual (musty/render template @{"power" 1.21} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest triple-mustache-decimal-interpolation
@@ -142,7 +142,7 @@
     ``
     "{{{power}}} jiggawatts!"
     ``)
-  (def actual (musty/render template @{"power" 1.21} "res/fixtures/"))
+  (def actual (musty/render template @{"power" 1.21} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest ampersand-decimal-interpolation
@@ -154,7 +154,7 @@
     ``
     "{{&power}} jiggawatts!"
     ``)
-  (def actual (musty/render template @{"power" 1.21} "res/fixtures/"))
+  (def actual (musty/render template @{"power" 1.21} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest basic-null-interpolation
@@ -166,7 +166,7 @@
     ``
     I ({{cannot}}) be seen!
     ``)
-  (def actual (musty/render template @{"cannot" nil} "res/fixtures/"))
+  (def actual (musty/render template @{"cannot" nil} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest triple-mustache-null-interpolation
@@ -178,7 +178,7 @@
     ``
     I ({{{cannot}}}) be seen!
     ``)
-  (def actual (musty/render template @{"cannot" nil} "res/fixtures/"))
+  (def actual (musty/render template @{"cannot" nil} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest ampersand-null-interpolation
@@ -190,7 +190,7 @@
     ``
     I ({{&cannot}}) be seen!
     ``)
-  (def actual (musty/render template @{"cannot" nil} "res/fixtures/"))
+  (def actual (musty/render template @{"cannot" nil} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest basic-context-miss-interpolation
@@ -202,7 +202,7 @@
     ``
     I ({{cannot}}) be seen!
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest triple-mustache-context-miss-interpolation
@@ -214,7 +214,7 @@
     ``
     I ({{{cannot}}}) be seen!
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest ampersand-context-miss-interpolation
@@ -226,7 +226,7 @@
     ``
     I ({{&cannot}}) be seen!
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest dotted-names---basic-interpolation
@@ -238,7 +238,7 @@
     ``
     "{{person.name}}" == "{{#person}}{{name}}{{/person}}"
     ``)
-  (def actual (musty/render template @{"person" @{"name" "Joe"}} "res/fixtures/"))
+  (def actual (musty/render template @{"person" @{"name" "Joe"}} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest dotted-names---triple-mustache-interpolation
@@ -250,7 +250,7 @@
     ``
     "{{{person.name}}}" == "{{#person}}{{{name}}}{{/person}}"
     ``)
-  (def actual (musty/render template @{"person" @{"name" "Joe"}} "res/fixtures/"))
+  (def actual (musty/render template @{"person" @{"name" "Joe"}} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest dotted-names---ampersand-interpolation
@@ -262,7 +262,7 @@
     ``
     "{{&person.name}}" == "{{#person}}{{&name}}{{/person}}"
     ``)
-  (def actual (musty/render template @{"person" @{"name" "Joe"}} "res/fixtures/"))
+  (def actual (musty/render template @{"person" @{"name" "Joe"}} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest dotted-names---arbitrary-depth
@@ -274,7 +274,7 @@
     ``
     "{{a.b.c.d.e.name}}" == "Phil"
     ``)
-  (def actual (musty/render template @{"a" @{"b" @{"c" @{"d" @{"e" @{"name" "Phil"}}}}}} "res/fixtures/"))
+  (def actual (musty/render template @{"a" @{"b" @{"c" @{"d" @{"e" @{"name" "Phil"}}}}}} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest dotted-names---broken-chains
@@ -286,7 +286,7 @@
     ``
     "{{a.b.c}}" == ""
     ``)
-  (def actual (musty/render template @{"a" @{}} "res/fixtures/"))
+  (def actual (musty/render template @{"a" @{}} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest dotted-names---broken-chain-resolution
@@ -298,7 +298,7 @@
     ``
     "{{a.b.c.name}}" == ""
     ``)
-  (def actual (musty/render template @{"c" @{"name" "Jim"} "a" @{"b" @{}}} "res/fixtures/"))
+  (def actual (musty/render template @{"c" @{"name" "Jim"} "a" @{"b" @{}}} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest dotted-names---initial-resolution
@@ -310,7 +310,7 @@
     ``
     "{{#a}}{{b.c.d.e.name}}{{/a}}" == "Phil"
     ``)
-  (def actual (musty/render template @{"b" @{"c" @{"d" @{"e" @{"name" "Wrong"}}}} "a" @{"b" @{"c" @{"d" @{"e" @{"name" "Phil"}}}}}} "res/fixtures/"))
+  (def actual (musty/render template @{"b" @{"c" @{"d" @{"e" @{"name" "Wrong"}}}} "a" @{"b" @{"c" @{"d" @{"e" @{"name" "Phil"}}}}}} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest dotted-names---context-precedence
@@ -322,7 +322,7 @@
     ``
     {{#a}}{{b.c}}{{/a}}
     ``)
-  (def actual (musty/render template @{"b" @{"c" "ERROR"} "a" @{"b" @{}}} "res/fixtures/"))
+  (def actual (musty/render template @{"b" @{"c" "ERROR"} "a" @{"b" @{}}} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest dotted-names-are-never-single-keys
@@ -334,7 +334,7 @@
     ``
     {{a.b}}
     ``)
-  (def actual (musty/render template @{"a.b" "c"} "res/fixtures/"))
+  (def actual (musty/render template @{"a.b" "c"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest dotted-names---no-masking
@@ -346,7 +346,7 @@
     ``
     {{a.b}}
     ``)
-  (def actual (musty/render template @{"a" @{"b" "d"} "a.b" "c"} "res/fixtures/"))
+  (def actual (musty/render template @{"a" @{"b" "d"} "a.b" "c"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest implicit-iterators---basic-interpolation
@@ -360,7 +360,7 @@
     Hello, {{.}}!
     
     ``)
-  (def actual (musty/render template "world" "res/fixtures/"))
+  (def actual (musty/render template "world" :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest implicit-iterators---html-escaping
@@ -374,7 +374,7 @@
     These characters should be HTML escaped: {{.}}
     
     ``)
-  (def actual (musty/render template "& \" < >" "res/fixtures/"))
+  (def actual (musty/render template "& \" < >" :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest implicit-iterators---triple-mustache
@@ -388,7 +388,7 @@
     These characters should not be HTML escaped: {{{.}}}
     
     ``)
-  (def actual (musty/render template "& \" < >" "res/fixtures/"))
+  (def actual (musty/render template "& \" < >" :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest implicit-iterators---ampersand
@@ -402,7 +402,7 @@
     These characters should not be HTML escaped: {{&.}}
     
     ``)
-  (def actual (musty/render template "& \" < >" "res/fixtures/"))
+  (def actual (musty/render template "& \" < >" :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest implicit-iterators---basic-integer-interpolation
@@ -414,7 +414,7 @@
     ``
     "{{.}} miles an hour!"
     ``)
-  (def actual (musty/render template 85 "res/fixtures/"))
+  (def actual (musty/render template 85 :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest interpolation---surrounding-whitespace
@@ -426,7 +426,7 @@
     ``
     | {{string}} |
     ``)
-  (def actual (musty/render template @{"string" "---"} "res/fixtures/"))
+  (def actual (musty/render template @{"string" "---"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest triple-mustache---surrounding-whitespace
@@ -438,7 +438,7 @@
     ``
     | {{{string}}} |
     ``)
-  (def actual (musty/render template @{"string" "---"} "res/fixtures/"))
+  (def actual (musty/render template @{"string" "---"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest ampersand---surrounding-whitespace
@@ -450,7 +450,7 @@
     ``
     | {{&string}} |
     ``)
-  (def actual (musty/render template @{"string" "---"} "res/fixtures/"))
+  (def actual (musty/render template @{"string" "---"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest interpolation---standalone
@@ -464,7 +464,7 @@
       {{string}}
     
     ``)
-  (def actual (musty/render template @{"string" "---"} "res/fixtures/"))
+  (def actual (musty/render template @{"string" "---"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest triple-mustache---standalone
@@ -478,7 +478,7 @@
       {{{string}}}
     
     ``)
-  (def actual (musty/render template @{"string" "---"} "res/fixtures/"))
+  (def actual (musty/render template @{"string" "---"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest ampersand---standalone
@@ -492,7 +492,7 @@
       {{&string}}
     
     ``)
-  (def actual (musty/render template @{"string" "---"} "res/fixtures/"))
+  (def actual (musty/render template @{"string" "---"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest interpolation-with-padding
@@ -504,7 +504,7 @@
     ``
     |{{ string }}|
     ``)
-  (def actual (musty/render template @{"string" "---"} "res/fixtures/"))
+  (def actual (musty/render template @{"string" "---"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest triple-mustache-with-padding
@@ -516,7 +516,7 @@
     ``
     |{{{ string }}}|
     ``)
-  (def actual (musty/render template @{"string" "---"} "res/fixtures/"))
+  (def actual (musty/render template @{"string" "---"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest ampersand-with-padding
@@ -528,7 +528,7 @@
     ``
     |{{& string }}|
     ``)
-  (def actual (musty/render template @{"string" "---"} "res/fixtures/"))
+  (def actual (musty/render template @{"string" "---"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (run-tests!)

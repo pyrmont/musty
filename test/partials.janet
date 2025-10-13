@@ -12,7 +12,7 @@
     ``
     "{{>partials_basic-behavior_text}}"
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest failed-lookup
@@ -24,7 +24,7 @@
     ``
     "{{>text}}"
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest context
@@ -36,7 +36,7 @@
     ``
     "{{>partials_context_partial}}"
     ``)
-  (def actual (musty/render template @{"text" "content"} "res/fixtures/"))
+  (def actual (musty/render template @{"text" "content"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest recursion
@@ -48,7 +48,7 @@
     ``
     {{>partials_recursion_node}}
     ``)
-  (def actual (musty/render template @{"content" "X" "nodes" @[@{"content" "Y" "nodes" @[]}]} "res/fixtures/"))
+  (def actual (musty/render template @{"content" "X" "nodes" @[@{"content" "Y" "nodes" @[]}]} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest nested
@@ -60,7 +60,7 @@
     ``
     {{>partials_nested_outer}}
     ``)
-  (def actual (musty/render template @{"b" "world" "a" "hello"} "res/fixtures/"))
+  (def actual (musty/render template @{"b" "world" "a" "hello"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest surrounding-whitespace
@@ -72,7 +72,7 @@
     ``
     | {{>partials_surrounding-whitespace_partial}} |
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest inline-indentation
@@ -87,7 +87,7 @@
       {{data}}  {{> partials_inline-indentation_partial}}
     
     ``)
-  (def actual (musty/render template @{"data" "|"} "res/fixtures/"))
+  (def actual (musty/render template @{"data" "|"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest standalone-line-endings
@@ -102,7 +102,7 @@
     {{>partials_standalone-line-endings_partial}}
     |
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest standalone-without-previous-line
@@ -116,7 +116,7 @@
       {{>partials_standalone-without-previous-line_partial}}
     >
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest standalone-without-newline
@@ -131,7 +131,7 @@
     >
       {{>partials_standalone-without-newline_partial}}
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest standalone-indentation
@@ -152,7 +152,7 @@
     /
     
     ``)
-  (def actual (musty/render template @{"content" "<\n->"} "res/fixtures/"))
+  (def actual (musty/render template @{"content" "<\n->"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest padding-whitespace
@@ -164,7 +164,7 @@
     ``
     |{{> partials_padding-whitespace_partial }}|
     ``)
-  (def actual (musty/render template @{"boolean" true} "res/fixtures/"))
+  (def actual (musty/render template @{"boolean" true} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (run-tests!)

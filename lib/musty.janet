@@ -40,7 +40,7 @@
 (var- t)
 (var- tag)
 
-(defn copy [v]
+(defn- copy [v]
   (case (type v)
     # table
     :table
@@ -120,7 +120,7 @@
   (assert (array? children) "(syntax) parent not containing node")
   (array/push children child))
 
-(defn add-line []
+(defn- add-line []
   (unless (and only-ws?
                (not no-tags?))
     (buffer/push out line))
@@ -257,6 +257,7 @@
   (set tag nil))
 
 (defn- do-partial []
+  (assert (not (nil? ctd)) "cannot parse partials if dir not provided to render")
   (end-text)
   (def begin (+ 0 (length dop) 1))
   (def end (- -1 (length dcl)))
@@ -465,16 +466,14 @@
 
 (defn render
   ```
-  Renders a Mustache template using the provided data
+  Renders a Mustache `template` using the provided `context` in `dir`
+
+  The directory `dir` is used to load partial templates. If not provided,
+  an error will be raised if a partial is encountered.
   ```
-  [template context cwd]
-  (def root (parse* template cwd))
+  [template context &named dir]
+  (def root (parse* template dir))
   (put root :ctx context)
   (resolve root)
   (add-line)
   (string out))
-
-(comment
-  (render "hello" {})
-  (render "{{a.b}}" {"a" {"b" "foo"}})
-  (render "{{{s}}}" {"s" 5}))

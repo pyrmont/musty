@@ -12,7 +12,7 @@
     ``
     "{{^boolean}}This should be rendered.{{/boolean}}"
     ``)
-  (def actual (musty/render template @{"boolean" false} "res/fixtures/"))
+  (def actual (musty/render template @{"boolean" false} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest truthy
@@ -24,7 +24,7 @@
     ``
     "{{^boolean}}This should not be rendered.{{/boolean}}"
     ``)
-  (def actual (musty/render template @{"boolean" true} "res/fixtures/"))
+  (def actual (musty/render template @{"boolean" true} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest null-is-falsey
@@ -36,7 +36,7 @@
     ``
     "{{^null}}This should be rendered.{{/null}}"
     ``)
-  (def actual (musty/render template @{"null" nil} "res/fixtures/"))
+  (def actual (musty/render template @{"null" nil} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest context
@@ -48,7 +48,7 @@
     ``
     "{{^context}}Hi {{name}}.{{/context}}"
     ``)
-  (def actual (musty/render template @{"context" @{"name" "Joe"}} "res/fixtures/"))
+  (def actual (musty/render template @{"context" @{"name" "Joe"}} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest list
@@ -60,7 +60,7 @@
     ``
     "{{^list}}{{n}}{{/list}}"
     ``)
-  (def actual (musty/render template @{"list" @[@{"n" 1} @{"n" 2} @{"n" 3}]} "res/fixtures/"))
+  (def actual (musty/render template @{"list" @[@{"n" 1} @{"n" 2} @{"n" 3}]} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest empty-list
@@ -72,7 +72,7 @@
     ``
     "{{^list}}Yay lists!{{/list}}"
     ``)
-  (def actual (musty/render template @{"list" @[]} "res/fixtures/"))
+  (def actual (musty/render template @{"list" @[]} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest doubled
@@ -94,7 +94,7 @@
     {{/bool}}
     
     ``)
-  (def actual (musty/render template @{"bool" false "two" "second"} "res/fixtures/"))
+  (def actual (musty/render template @{"bool" false "two" "second"} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest nested-_falsey_
@@ -106,7 +106,7 @@
     ``
     | A {{^bool}}B {{^bool}}C{{/bool}} D{{/bool}} E |
     ``)
-  (def actual (musty/render template @{"bool" false} "res/fixtures/"))
+  (def actual (musty/render template @{"bool" false} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest nested-_truthy_
@@ -118,7 +118,7 @@
     ``
     | A {{^bool}}B {{^bool}}C{{/bool}} D{{/bool}} E |
     ``)
-  (def actual (musty/render template @{"bool" true} "res/fixtures/"))
+  (def actual (musty/render template @{"bool" true} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest context-misses
@@ -130,7 +130,7 @@
     ``
     [{{^missing}}Cannot find key 'missing'!{{/missing}}]
     ``)
-  (def actual (musty/render template @{} "res/fixtures/"))
+  (def actual (musty/render template @{} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest dotted-names---truthy
@@ -142,7 +142,7 @@
     ``
     "{{^a.b.c}}Not Here{{/a.b.c}}" == ""
     ``)
-  (def actual (musty/render template @{"a" @{"b" @{"c" true}}} "res/fixtures/"))
+  (def actual (musty/render template @{"a" @{"b" @{"c" true}}} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest dotted-names---falsey
@@ -154,7 +154,7 @@
     ``
     "{{^a.b.c}}Not Here{{/a.b.c}}" == "Not Here"
     ``)
-  (def actual (musty/render template @{"a" @{"b" @{"c" false}}} "res/fixtures/"))
+  (def actual (musty/render template @{"a" @{"b" @{"c" false}}} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest dotted-names---broken-chains
@@ -166,7 +166,7 @@
     ``
     "{{^a.b.c}}Not Here{{/a.b.c}}" == "Not Here"
     ``)
-  (def actual (musty/render template @{"a" @{}} "res/fixtures/"))
+  (def actual (musty/render template @{"a" @{}} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest surrounding-whitespace
@@ -180,7 +180,7 @@
      | {{^boolean}}	|	{{/boolean}} | 
     
     ``)
-  (def actual (musty/render template @{"boolean" false} "res/fixtures/"))
+  (def actual (musty/render template @{"boolean" false} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest internal-whitespace
@@ -196,7 +196,7 @@
      {{/boolean}} | 
     
     ``)
-  (def actual (musty/render template @{"boolean" false} "res/fixtures/"))
+  (def actual (musty/render template @{"boolean" false} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest indented-inline-sections
@@ -212,7 +212,7 @@
      {{^boolean}}WAY{{/boolean}}
     
     ``)
-  (def actual (musty/render template @{"boolean" false} "res/fixtures/"))
+  (def actual (musty/render template @{"boolean" false} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest standalone-lines
@@ -232,7 +232,7 @@
     | A Line
     
     ``)
-  (def actual (musty/render template @{"boolean" false} "res/fixtures/"))
+  (def actual (musty/render template @{"boolean" false} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest standalone-indented-lines
@@ -252,7 +252,7 @@
     | A Line
     
     ``)
-  (def actual (musty/render template @{"boolean" false} "res/fixtures/"))
+  (def actual (musty/render template @{"boolean" false} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest standalone-line-endings
@@ -268,7 +268,7 @@
     {{/boolean}}
     |
     ``)
-  (def actual (musty/render template @{"boolean" false} "res/fixtures/"))
+  (def actual (musty/render template @{"boolean" false} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest standalone-without-previous-line
@@ -283,7 +283,7 @@
     ^{{/boolean}}
     /
     ``)
-  (def actual (musty/render template @{"boolean" false} "res/fixtures/"))
+  (def actual (musty/render template @{"boolean" false} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest standalone-without-newline
@@ -299,7 +299,7 @@
     /
       {{/boolean}}
     ``)
-  (def actual (musty/render template @{"boolean" false} "res/fixtures/"))
+  (def actual (musty/render template @{"boolean" false} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (deftest padding
@@ -311,7 +311,7 @@
     ``
     |{{^ boolean }}={{/ boolean }}|
     ``)
-  (def actual (musty/render template @{"boolean" false} "res/fixtures/"))
+  (def actual (musty/render template @{"boolean" false} :dir "res/fixtures/"))
   (is (== expect actual)))
 
 (run-tests!)

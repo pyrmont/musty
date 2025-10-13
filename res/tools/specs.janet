@@ -29,7 +29,7 @@
       ``
       TEMPLATE
       ``)
-    (def actual (musty/render template DATA "res/fixtures/"))
+    (def actual (musty/render template DATA :dir "res/fixtures/"))
     (is (== expect actual)))
   ```)
 

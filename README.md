@@ -5,18 +5,19 @@
 [icon]: https://github.com/pyrmont/musty/workflows/test/badge.svg
 [status]: https://github.com/pyrmont/musty/actions?query=workflow%3Atest
 
-Musty is an incomplete Mustache implementation in Janet.
+Musty is an implementation of the [Mustache][] templating language in Janet.
+
+[Mustache]: https://mustache.github.io/
 
 ## Rationale
 
 Mustache templates are strings with special values that are expanded when
-rendered. Musty handles the rendering in a straightforward way. Give it your
-template and a dictionary object and you get back to the expanded string. Too
-easy.
+rendered. Give Musty your template string, a context dictionary and an optional
+directory path for partials. You get back the expanded string. Too easy.
 
-Musty passes Mustache's [specs][] for **variables**, **sections**,
-**inverted sections** and **comments**. It does not implement **partials**,
-**lambdas** or custom **delimiters**.
+Musty passes Mustache's [specs][] for **variables**, **sections**, **inverted
+sections**, **comments**, **partials** and **custom delimiters**. It does not
+support **lambdas**, **dynamic names** or **inheritance**.
 
 [specs]: https://github.com/mustache/spec
 
@@ -37,7 +38,7 @@ Musty can be used like this:
 ```janet
 (import musty)
 
-(musty/render "Hello {{world}}!" {:world "everybody"})
+(musty/render "Hello {{world}}!" {:world "everybody"} :dir ".")
 # => "Hello everybody!"
 ```
 
