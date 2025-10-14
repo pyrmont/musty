@@ -26,19 +26,19 @@
     :ctx nil
     :value nil})
 
-(var- ctd)
-(var- ctf)
-(var- dcl)
-(var- dop)
-(var- line)
-(var- node)
-(var- no-tags?)
-(var- only-ws?)
-(var- out)
-(var- pos)
-(var- root)
-(var- t)
-(var- tag)
+(var- ctd nil)
+(var- ctf nil)
+(var- dcl nil)
+(var- dop nil)
+(var- line nil)
+(var- node nil)
+(var- no-tags? nil)
+(var- only-ws? nil)
+(var- out nil)
+(var- pos nil)
+(var- root nil)
+(var- t nil)
+(var- tag nil)
 
 (defn- copy [v]
   (case (type v)
@@ -368,7 +368,7 @@
   (while (not (nil? n))
     (var ctx (get n :ctx))
     (each k ks
-      (set ctx (get ctx k))
+      (set ctx (or (get ctx k) (get ctx (keyword k))))
       (if (nil? ctx)
         (break)
         (set found? true)))
@@ -428,12 +428,14 @@
       (set no-tags? false))
     :section
     (do
+      (set no-tags? false)
       (def val (interpolate node))
       (def invert? (get node :invert?))
       (cond
-        (and (or (not val) (and (indexed? val) (empty? val))) invert?)
+        (and (or (not val)
+                 (and (indexed? val) (empty? val)))
+             invert?)
         (each n (get node :value)
-          (set no-tags? false)
           (put n :ctx (get node :ctx))
           (resolve n))
         (and val (not invert?))
@@ -441,7 +443,6 @@
           (def group (if (indexed? val) val [val]))
           (each item group
             (each n (get node :value)
-              (set no-tags? false)
               (put n :ctx item)
               (resolve n)))))
       (set no-tags? false))

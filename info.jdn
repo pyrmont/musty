@@ -1,5 +1,5 @@
 {:name "musty"
- :version "0.1.0"
+ :version "DEVEL"
  :description "An implementation of the Mustache template system"
  :author "Michael Camilleri"
  :license "MIT"
