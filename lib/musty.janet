@@ -120,6 +120,12 @@
   (assert (array? children) "(syntax) parent not containing node")
   (array/push children child))
 
+(defn- add-dir-sep [path]
+  (if (or (string/has-suffix? "/" path) (string/has-suffix? "\\" path))
+    (break path))
+  (def s (get {:mingw "\\" :windows "\\"} (os/which) "/"))
+  (string path s))
+
 (defn- add-line []
   (unless (and only-ws?
                (not no-tags?))
@@ -127,12 +133,6 @@
   (buffer/clear line)
   (set only-ws? true)
   (set no-tags? true))
-
-(defn- dir [path]
-  (if (or (string/has-suffix? "/" path) (string/has-suffix? "\\" path))
-    (break path))
-  (def s (get {:mingw "\\" :windows "\\"} (os/which) "/"))
-  (string path s))
 
 (defn- escape [s]
   (def res @"")
@@ -267,7 +267,7 @@
   (put new-node :id id)
   (put new-node :tag :partial)
   (put new-node :parent node)
-  (put new-node :value (string (dir ctd) id ".mustache"))
+  (put new-node :value (string (add-dir-sep ctd) id ".mustache"))
   (add-child node new-node)
   (set tag nil))
 
