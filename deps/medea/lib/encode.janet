@@ -58,78 +58,110 @@
   (default pretty? false)
   (var res @"")
   (var first? true)
-  (var indent 0)
+  (var col 0)
+  (def indents @[])
   (def close-arr @"")
   (def close-obj @"")
   (def kv? @"")
+  (def visiting @{})
   (def processing @[data])
+
+  # Helper to write and track column position
+  (defn write [& args]
+    (each s args
+      (buffer/push res s)
+      (def str (string s))
+      (if-let [nl-pos (string/find "\n" str)]
+        # Contains newline - column is length after last newline
+        (let [parts (string/split "\n" str)
+              last-part (last parts)]
+          (set col (length last-part)))
+        # No newline - increment column
+        (+= col (length str)))))
+
   (while (not (empty? processing))
     (def item (array/pop processing))
     (case item
       close-arr
-      (buffer/push res "]")
+      (do
+        (def obj (array/pop processing))
+        (put visiting obj nil)
+        (when pretty?
+          (array/pop indents))
+        (write "]"))
 
       close-obj
-      (buffer/push res "}")
+      (do
+        (def obj (array/pop processing))
+        (put visiting obj nil)
+        (when pretty?
+          (array/pop indents))
+        (write "}"))
 
       (do
         (if first?
           (set first? false)
           (do
-            (buffer/push res ",")
+            (write ",")
             (when pretty?
-              (buffer/push res "\n" (string/repeat " " indent)))))
+              (write "\n" (string/repeat " " (last indents))))))
         (cond
           (= kv? item)
           (do
             (set first? true)
             (def kv (array/pop processing))
             (array/push processing (kv 1))
-            (buffer/push res `"` (escape (kv 0)) `":`))
+            (write `"` (escape (kv 0)) `":`))
 
           (indexed? item)
           (do
+            (when (get visiting item)
+              (error "circular reference detected"))
+            (put visiting item true)
             (set first? true)
+            (array/push processing item)
             (array/push processing close-arr)
             (def new-length (+ (length processing) (length item)))
             (array/ensure processing new-length 1)
             (var i new-length)
             (each el item
               (put processing (-- i) el))
-            (buffer/push res "[")
+            (write "[")
             (when pretty?
-              (+= indent 2)
-              (buffer/push "\n" (string/repeat " " indent))))
+              (array/push indents col)))
 
           (dictionary? item)
           (do
+            (when (get visiting item)
+              (error "circular reference detected"))
+            (put visiting item true)
             (set first? true)
+            (array/push processing item)
             (array/push processing close-obj)
             (eachp kv item
               (array/push processing kv)
               (array/push processing kv?))
-            (buffer/push res "{")
+            (write "{")
             (when pretty?
-              (+= indent 2)
-              (buffer/push "\n" (string/repeat " " indent))))
+              (array/push indents col)))
 
           (= :null item)
-          (buffer/push res "null")
+          (write "null")
 
           (and (bytes? item) (not (symbol? item)))
-          (buffer/push res `"` (escape item) `"`)
+          (write `"` (escape item) `"`)
 
           (number? item)
-          (buffer/push res (describe item))
+          (write (describe item))
 
           (true? item)
-          (buffer/push res "true")
+          (write "true")
 
           (false? item)
-          (buffer/push res "false")
+          (write "false")
 
           (nil? item)
-          (buffer/push res "null")
+          (write "null")
 
           (error (string "cannot encode " (type item) " '" item "' to JSON"))))))
   res)

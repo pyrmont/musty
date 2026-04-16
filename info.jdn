@@ -5,23 +5,19 @@
  :license "MIT"
  :url "https://github.com/pyrmont/musty"
  :repo "git+https://github.com/pyrmont/musty"
-
- :vendored {
-   "deps" [
-     {:name "medea"
-      :url "https://github.com/pyrmont/medea"
-      :prefix "medea"
-      :files ["lib/decode.janet"
-              "lib/encode.janet"
-              "init.janet"
-              "LICENSE"]}
-     {:name "testament"
-      :url "https://github.com/pyrmont/testament"
-      :prefix "testament"
-      :files ["lib/testament.janet"
-              "init.janet"
-              "LICENSE"]}]}
-
- :source {:prefix "musty"
-          :files ["lib"
-                  "init.janet"]}}
+ :vendored [{:name "medea"
+             :url "https://github.com/pyrmont/medea"
+             :prefix "deps/medea"
+             :paths ["lib/decode.janet"
+                     "lib/encode.janet"
+                     "init.janet"
+                     "LICENSE"]}
+            {:name "testament"
+             :url "https://github.com/pyrmont/testament"
+             :prefix "deps/testament"
+             :paths ["lib/testament.janet"
+                     "init.janet"
+                     "LICENSE"]}]
+ :artifacts {:libraries [{:prefix "musty"
+                          :paths ["lib"
+                                  "init.janet"]}]}}
