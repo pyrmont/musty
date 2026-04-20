@@ -415,9 +415,9 @@
 
 
 (defn- default-print-results
-  [reports]
+  [test-reports]
   (def s (stats))
-  (each report reports
+  (each report test-reports
     (unless (empty? (report :failures))
       (ruler s "-")
       (print "> " (colour :red "Failed") ": " (report :test))
@@ -785,8 +785,9 @@
   [expect expr &opt note]
   (let [errsym   (keyword (gensym))
         sentinel (gensym)
-        actual   (gensym)]
-    ~(let [[,sentinel ,actual] (try (do ,expr [nil nil]) ([err] [,errsym err]))]
+        actual   (gensym)
+        err      (gensym)]
+    ~(let [[,sentinel ,actual] (try (do ,expr [nil nil]) ([,err] [,errsym ,err]))]
       (,assert-thrown-message* (and (= ,sentinel ,errsym) (= ,expect ,actual )) ',expr ,expect ',expect ,actual ,note))))
 
 
@@ -1074,7 +1075,6 @@
   subject the bindings to testing.
   ```
   [path & args]
-  (def path (string path))
   (def ps (partition 2 args))
   (def argm (mapcat (fn [[k v]] [k (if (= k :as) (string v) v)]) ps))
   (tuple review-1 (string path) ;argm))
